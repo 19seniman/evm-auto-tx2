@@ -1,0 +1,25 @@
+{
+  "name": "evm-auto-tx2",
+  "version": "1.0.0",
+  "description": "Automate EVM transactions on testnets with ease. Configure your network and handle multiple transfers effortlessly using this bot.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node lim.js",
+    "target": "node target.js"
+  },
+  "keywords": [
+    "automation",
+    "EVM",
+    "testnet",
+    "transactions"
+  ],
+  "author": "HCA & 19Seniman",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "colors": "^1.4.0",
+    "ethers": "^6.13.1",
+    "readline-sync": "^1.4.10"
+  }
+}
