@@ -21,11 +21,11 @@
     "explorer": "https://somnia-testnet.socialscan.io"
   },
   {
-    "name": "O3Layer Testnet",
-    "rpcUrl": "https://testnet.rpc.o3layer.com",
-    "chainId": "53574309564",
-    "symbol": "O3",
-    "explorer": "https://testnet.explorer.o3layer.com"
+    "name": "0G-Galileo-Testnet",
+    "rpcUrl": "https://evmrpc-testnet.0g.ai/",
+    "chainId": "16601",
+    "symbol": "OG",
+    "explorer": "https://chainscan-galileo.0g.ai/"
   },
   {
     "name": "NERO Test Network",
