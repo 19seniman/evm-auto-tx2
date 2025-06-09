@@ -19,8 +19,8 @@ nano privateKeys.json
 format on nano privateKeys.json:
 ```
 [
-    "0xYOUR_PRIVATE_KEY_1",
-    "0xYOUR_PRIVATE_KEY_2"
+    "fill your pvkey1",
+    "fill your pvkey1"
 ]
 ```
 save : ctrl x y enter
