@@ -26,7 +26,6 @@ nano privateKeys.json
 format on nano privateKeys.json:
 ```
 [
-    "fill your pvkey1",
     "fill your pvkey1"
 ]
 ```
@@ -39,7 +38,7 @@ nano addresses.json
 format on nano addresses.json
 ```
 [
-    "fill your wallet address"
+    "fill your another wallet address"
 ]
 ```
 save : ctrl x y enter
