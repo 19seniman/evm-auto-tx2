@@ -32,7 +32,7 @@ nano addresses.json
 format on nano addresses.json
 ```
 [
-    "0xTARGET_ADDRESS_1"
+    "fill your wallet address"
 ]
 ```
 save : ctrl x y enter
