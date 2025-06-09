@@ -38,7 +38,7 @@ nano addresses.json
 format on nano addresses.json
 ```
 [
-    "fill your another wallet address"
+    " add another wallet address"
 ]
 ```
 save : ctrl x y enter
