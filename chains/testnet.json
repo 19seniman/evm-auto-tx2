@@ -49,11 +49,11 @@
     "explorer": "https://rome.testnet.romeprotocol.xyz:1000"
   },
   {
-    "name": "Reddio Development Network",
-    "rpcUrl": "https://reddio-dev.reddio.com",
-    "chainId": "50341",
-    "symbol": "RED",
-    "explorer": "https://reddio-devnet.l2scan.co"
+    "name": "HAUST Testnet Network",
+    "rpcUrl": "https://rpc-testnet.haust.app",
+    "chainId": "1523903251",
+    "symbol": "HAUST",
+    "explorer": "https://explorer-testnet.haust.app"
   },
   {
     "name": "Tea Assam Testnet",
