@@ -168,7 +168,7 @@ const main = async () => {
   }
 
   console.log(colors.green("All transactions completed."));
-  console.log(colors.green("Subscribe: https://t.me/HappyCuanAirdrop."));
+  console.log(colors.green("Donate: https://link.dana.id/minta?full_url=https://qr.dana.id/v1/281012012021032341685692."));
   process.exit(0);
 };
 
