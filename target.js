@@ -168,7 +168,7 @@ const main = async () => {
   }
 
   console.log(colors.green("All transactions completed."));
-  console.log(colors.green("Donate: https://link.dana.id/minta?full_url=https://qr.dana.id/v1/281012012021032341685692."));
+  console.log(colors.green("Donate: 0xf01fb9a6855f175d3f3e28e00fa617009c38ef59."));
   process.exit(0);
 };
 
