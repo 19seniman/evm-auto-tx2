@@ -182,10 +182,10 @@
     "explorer": "https://testnet.storyscan.xyz"
   },
   {
-    "name": "WeaveVM Testnet",
-    "rpcUrl": "https://testnet.wvm.dev",
-    "chainId": "9496",
-    "symbol": "tWVM",
-    "explorer": "https://explorer.wvm.dev"
+    "name": "SaharaAI Testnet",
+    "rpcUrl": "https://testnet.saharalabs.ai",
+    "chainId": "313313",
+    "symbol": "SAHARA",
+    "explorer": "https://testnet-explorer.saharalabs.ai"
   }
 ]
