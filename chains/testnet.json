@@ -84,11 +84,11 @@
     "explorer": "https://explorer.testnet.humanity.org"
   },
   {
-    "name": "Lumia Testnet",
-    "rpcUrl": "https://lumia-testnet-rpc.eu-north-2.gateway.fm",
-    "chainId": "1952959480",
-    "symbol": "LUMIA",
-    "explorer": "https://lumia-testnet-blockscout.eu-north-2.gateway.fm"
+    "name": "Helios Testnet",
+    "rpcUrl": "https://testnet1.helioschainlabs.org/",
+    "chainId": "42000",
+    "symbol": "HLS",
+    "explorer": "https://explorer.helioschainlabs.org/"
   },
   {
     "name": "Testnet Onefinity",
