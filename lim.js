@@ -174,7 +174,7 @@ const main = async () => {
 
   console.log("");
   console.log(colors.green("All transactions completed."));
-  console.log(colors.green("Subscribe: https://t.me/HappyCuanAirdrop."));
+  console.log(colors.green("Subscribe: https://t.me/Insider911trading_Bot."));
   process.exit(0);
 };
 
