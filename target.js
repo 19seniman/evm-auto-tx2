@@ -5,7 +5,7 @@ const readlineSync = require("readline-sync");
 
 const checkBalance = require("./src/checkBalance");
 const displayHeader = require("./src/displayHeader");
-const sleep = require("./src/sleep");
+const sleep = require("./src/sleep"); // This function is already available
 const { loadChains, selectChain, selectNetworkType } = require("./src/chainUtils");
 
 const MAX_RETRIES = 5;
@@ -24,6 +24,15 @@ async function retry(fn, maxRetries = MAX_RETRIES, delay = RETRY_DELAY) {
 }
 
 const main = async () => {
+  // --- ADDED DELAY HERE ---
+  const delayHours = 24;
+  const delayMilliseconds = delayHours * 60 * 60 * 1000; // Convert 24 hours to milliseconds
+
+  console.log(colors.yellow(`🚀 Script will start in ${delayHours} hours...`));
+  await sleep(delayMilliseconds);
+  console.log(colors.green("✅ Delay finished. Starting script now."));
+  // --- END ADDED DELAY ---
+
   displayHeader();
 
   const networkType = selectNetworkType();
