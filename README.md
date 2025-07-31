@@ -46,3 +46,7 @@ save : ctrl x y enter
 ```
 npm run target
 ```
+or 
+```
+node lim.js
+```
