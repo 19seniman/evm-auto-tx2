@@ -17,6 +17,7 @@ cd evm-auto-tx2
 ```
 ```
 npm install
+npm install readline-sync
 ```
 ```
 nano privateKeys.json
