@@ -29,10 +29,10 @@
   },
   {
     "name": "Nexus",
-    "rpcUrl": "https://rpc.nexus.xyz/http",
-    "chainId": "393",
+    "rpcUrl": "https://nexus-testnet.g.alchemy.com/public",
+    "chainId": "3940",
     "symbol": "NEX",
-    "explorer": "https://explorer.nexus.xyz"
+    "explorer": "https://testnet3.explorer.nexus.xyz"
   },
   {
     "name": "Monad Testnet",
