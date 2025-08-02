@@ -1,8 +1,7 @@
 const { ethers } = require("ethers");
 const colors = require("colors");
 const fs = require("fs");
-// 'readline-sync' diaktifkan kembali untuk mendapatkan input dari pengguna
-const readlineSync = require("readline-sync"); 
+const readlineSync = require("readline-sync");
 
 const checkBalance = require("./src/checkBalance");
 const displayHeader = require("./src/displayHeader");
@@ -11,8 +10,8 @@ const { loadChains, selectChain, selectNetworkType } = require("./src/chainUtils
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 5000;
-// Atur jeda (dalam menit) antara setiap siklus pengiriman dari semua wallet
-const CYCLE_DELAY_MINUTES = 10; 
+// Definisikan jeda 24 jam dalam milidetik
+const CYCLE_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 async function retry(fn, maxRetries = MAX_RETRIES, delay = RETRY_DELAY) {
   for (let i = 0; i < maxRetries; i++) {
@@ -27,7 +26,6 @@ async function retry(fn, maxRetries = MAX_RETRIES, delay = RETRY_DELAY) {
 }
 
 // Fungsi ini berisi logika utama untuk memproses satu siklus transaksi
-// Menambahkan parameter 'numberOfTransactions'
 const processTransactions = async (provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions) => {
   for (const privateKey of privateKeys) {
     const wallet = new ethers.Wallet(privateKey, provider);
@@ -49,30 +47,25 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
       console.log(colors.red(`❌ Gagal memeriksa saldo untuk ${senderAddress}. Lanjut ke wallet berikutnya.`));
       continue;
     }
-    
-    // Minimal saldo yang dibutuhkan untuk gas fee
+
     if (senderBalance < ethers.parseUnits("0.001", "ether")) {
       console.log(colors.red("❌ Saldo tidak cukup untuk transaksi. Lanjut ke wallet berikutnya."));
       continue;
     }
 
-    // Loop sebanyak jumlah transaksi yang ditentukan pengguna
     for (let i = 0; i < numberOfTransactions; i++) {
-      // Periksa ulang saldo sebelum setiap pengiriman untuk memastikan dana masih ada
       try {
         senderBalance = await retry(() => checkBalance(provider, senderAddress));
         if (senderBalance < ethers.parseUnits("0.001", "ether")) {
           console.log(colors.red("❌ Saldo terlalu rendah untuk melanjutkan pengiriman. Menghentikan loop untuk wallet ini."));
-          break; // Keluar dari loop transaksi untuk wallet ini
+          break;
         }
       } catch (error) {
         console.log(colors.red(`❌ Gagal memeriksa ulang saldo. Menghentikan loop untuk wallet ini.`));
         break;
       }
-      
-      // Pilih penerima secara acak dari daftar
-      const receiverAddress = recipientAddresses[Math.floor(Math.random() * recipientAddresses.length)];
 
+      const receiverAddress = recipientAddresses[Math.floor(Math.random() * recipientAddresses.length)];
       console.log(colors.white(`\n🆕 Transaksi ${i + 1}/${numberOfTransactions} ke alamat acak: ${receiverAddress}`));
 
       const amountToSend = ethers.parseUnits(
@@ -87,7 +80,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
         console.log(colors.red("❌ Gagal mengambil harga gas. Melewatkan transaksi ini."));
         continue;
       }
-      
+
       const txCost = BigInt(21000) * gasPrice;
       if (senderBalance < (amountToSend + txCost)) {
         console.log(colors.yellow(`⚠️ Saldo tidak cukup untuk jumlah kirim & estimasi gas. Melewatkan transaksi.`));
@@ -112,11 +105,10 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
         );
       } catch (error) {
         console.log(colors.red(`❌ Gagal mengirim transaksi: ${error.message}`));
-        continue; // Lanjut ke iterasi berikutnya
+        continue;
       }
 
-      // Beri jeda 15 detik sebelum melanjutkan ke transaksi berikutnya atau verifikasi
-      console.log(colors.magenta("🕒 Menunggu 15 detik sebelum transaksi berikutnya..."));
+      console.log(colors.magenta("🕒 Menunggu 15 detik sebelum verifikasi..."));
       await sleep(15000);
 
       try {
@@ -134,68 +126,59 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
       } catch (error) {
         console.log(colors.red(`❌ Error saat memeriksa status transaksi: ${error.message}`));
       }
-    } // Akhir dari loop transaksi
-
+    }
     console.log(colors.green(`\n✅ Selesai memproses ${numberOfTransactions} transaksi untuk wallet: ${senderAddress}`));
-  } // Akhir dari loop private key
+  }
 };
 
-const main = async () => {
-  const DURATION_MS = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
+// <<< PERUBAHAN UTAMA DIMULAI DI SINI >>>
 
-  console.log(colors.bgGreen.black(`🚀 Memulai skrip transaksi otomatis selama 24 jam... `));
-  console.log(colors.bgYellow.black(`Skrip akan berhenti secara otomatis setelah 24 jam.`));
-
-  // Timer untuk menghentikan skrip setelah 24 jam
-  setTimeout(() => {
-    console.log(colors.bgGreen.black("\n🏁 Durasi 24 jam telah berakhir. Menghentikan skrip."));
-    console.log(colors.green("Donate: 0xf01fb9a6855f175d3f3e28e00fa617009c38ef59."));
-    process.exit(0);
-  }, DURATION_MS);
-
-  // Setup awal
-  displayHeader();
-  const networkType = selectNetworkType();
-  const chains = loadChains(networkType);
-  const selectedChain = selectChain(chains);
-  
-  console.log(colors.green(`✅ Anda memilih: ${selectedChain.name}`));
-  console.log(colors.green(`🛠 RPC URL: ${selectedChain.rpcUrl}`));
-
-  // === PERUBAHAN DIMULAI DI SINI ===
-  let numberOfTransactions;
-  while (true) {
-      const input = readlineSync.question(colors.yellow("Berapa kali transaksi per wallet? Masukkan angka: "));
-      numberOfTransactions = parseInt(input, 10);
-      if (!isNaN(numberOfTransactions) && numberOfTransactions > 0) {
-          break;
-      }
-      console.log(colors.red("Input tidak valid. Harap masukkan angka yang lebih besar dari 0."));
-  }
-  console.log(colors.green(`✅ Oke, akan menjalankan ${numberOfTransactions} transaksi untuk setiap wallet.`));
-  // === PERUBAHAN SELESAI DI SINI ===
-  
-  const provider = new ethers.JsonRpcProvider(selectedChain.rpcUrl);
-  const privateKeys = JSON.parse(fs.readFileSync("privateKeys.json"));
-  const recipientAddresses = JSON.parse(fs.readFileSync("addresses.json"));
-
-  // Loop tak terbatas untuk menjalankan proses
-  while (true) {
+// Fungsi ini membungkus satu siklus eksekusi penuh
+const runCycle = async (provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions) => {
     try {
-      console.log(colors.inverse("\n***** Memulai siklus transaksi baru *****"));
-      // Memasukkan 'numberOfTransactions' sebagai argumen
-      await processTransactions(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions);
-      console.log(colors.inverse(`***** Siklus selesai. Menunggu ${CYCLE_DELAY_MINUTES} menit sebelum memulai siklus berikutnya. *****`));
-      await sleep(CYCLE_DELAY_MINUTES * 60 * 1000);
+        console.log(colors.inverse("\n\n***** Memulai siklus transaksi baru *****"));
+        await processTransactions(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions);
+        console.log(colors.bgGreen.black("\n✅ Siklus transaksi berhasil diselesaikan. ✅"));
     } catch (error) {
-      console.error(colors.red("🚨 Terjadi error kritis di loop utama:"), error);
-      console.log(colors.yellow("Mencoba memulai ulang siklus setelah jeda singkat..."));
-      await sleep(60000); // Tunggu 1 menit sebelum mencoba lagi
+        console.error(colors.red("🚨 Terjadi error kritis selama siklus transaksi:"), error);
+    } finally {
+        // Menjadwalkan eksekusi berikutnya setelah 24 jam, tidak peduli siklus berhasil atau gagal
+        console.log(colors.bgYellow.black(`\n🕒 Menunggu 24 jam untuk siklus berikutnya. Eksekusi selanjutnya pada sekitar ${new Date(Date.now() + CYCLE_INTERVAL_MS).toLocaleString()}.`));
+        setTimeout(() => runCycle(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions), CYCLE_INTERVAL_MS);
     }
-  }
+};
+
+
+const main = async () => {
+    // Setup awal (hanya dijalankan sekali saat skrip dimulai)
+    displayHeader();
+    const networkType = selectNetworkType();
+    const chains = loadChains(networkType);
+    const selectedChain = selectChain(chains);
+
+    console.log(colors.green(`✅ Anda memilih: ${selectedChain.name}`));
+    console.log(colors.green(`🛠  RPC URL: ${selectedChain.rpcUrl}`));
+
+    let numberOfTransactions;
+    while (true) {
+        const input = readlineSync.question(colors.yellow("Berapa kali transaksi per wallet? Masukkan angka: "));
+        numberOfTransactions = parseInt(input, 10);
+        if (!isNaN(numberOfTransactions) && numberOfTransactions > 0) {
+            break;
+        }
+        console.log(colors.red("Input tidak valid. Harap masukkan angka yang lebih besar dari 0."));
+    }
+    console.log(colors.green(`✅ Oke, akan menjalankan ${numberOfTransactions} transaksi untuk setiap wallet per siklus.`));
+
+    const provider = new ethers.JsonRpcProvider(selectedChain.rpcUrl);
+    const privateKeys = JSON.parse(fs.readFileSync("privateKeys.json"));
+    const recipientAddresses = JSON.parse(fs.readFileSync("addresses.json"));
+
+    // Memulai siklus pertama secara langsung
+    runCycle(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions);
 };
 
 main().catch((error) => {
-  console.error(colors.red("🚨 Terjadi error tak terduga yang menghentikan skrip:"), error);
-  process.exit(1);
+    console.error(colors.red("🚨 Terjadi error tak terduga yang menghentikan skrip:"), error);
+    process.exit(1);
 });
