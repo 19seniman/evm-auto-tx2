@@ -28,7 +28,7 @@
     "explorer": "https://chainscan-galileo.0g.ai/"
   },
   {
-    "name": "Nexus Testnet",
+    "name": "Nexus",
     "rpcUrl": "https://nexus-testnet.g.alchemy.com/public",
     "chainId": "3940",
     "symbol": "NEX",
