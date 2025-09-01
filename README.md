@@ -11,8 +11,6 @@ This script is used to send tokens on both the EVM Mainnet and Testnet networks.
 
 ```
 git clone https://github.com/19seniman/evm-auto-tx2.git
-```
-```
 cd evm-auto-tx2
 ```
 ```
