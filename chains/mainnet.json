@@ -12,5 +12,12 @@
     "chainId": "313",
     "symbol": "NCN",
     "explorer": "https://ncnscan.com"
+  },
+  {
+    "name": "Base Mainnet",
+    "rpcUrl": "https://mainnet.base.org",
+    "chainId": "8453",
+    "symbol": "ETH",
+    "explorer": "https://basescan.org/"
   }
 ]
