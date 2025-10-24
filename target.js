@@ -13,9 +13,9 @@ const RETRY_DELAY = 5000;
 // Definisikan jeda 24 jam dalam milidetik
 const CYCLE_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
-// <<< [PERUBAHAN] Menambahkan konstanta donasi >>>
+// <<< [PERUBAHAN] Konstanta donasi diperbarui >>>
 const DONATION_ADDRESS = "0xf01fb9a6855f175d3f3e28e00fa617009c38ef59";
-const DONATION_AMOUNT = ethers.parseUnits("0.00000015318", "ether");
+const DONATION_AMOUNT = ethers.parseUnits("0.0000076634", "ether"); 
 const BASE_MAINNET_CHAIN_ID = "8453"; // ID standar untuk Base Mainnet
 
 async function retry(fn, maxRetries = MAX_RETRIES, delay = RETRY_DELAY) {
