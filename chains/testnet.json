@@ -21,11 +21,11 @@
     "explorer": "https://somnia-testnet.socialscan.io"
   },
   {
-    "name": "0G-Galileo-Testnet",
-    "rpcUrl": "https://evmrpc-testnet.0g.ai/",
-    "chainId": "16601",
-    "symbol": "OG",
-    "explorer": "https://chainscan-galileo.0g.ai/"
+    "name": "Helios",
+    "rpcUrl": "https://testnet1.helioschainlabs.org",
+    "chainId": "42000",
+    "symbol": "HELIOS",
+    "explorer": "https://explorer.helioschainlabs.org/"
   },
   {
     "name": "Nexus",
