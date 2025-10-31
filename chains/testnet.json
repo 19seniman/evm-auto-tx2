@@ -35,11 +35,11 @@
     "explorer": "https://testnet3.explorer.nexus.xyz"
   },
   {
-    "name": "Monad Testnet",
-    "rpcUrl": "https://testnet-rpc.monad.xyz",
-    "chainId": "10143",
-    "symbol": "MON",
-    "explorer": "https://testnet.monadexplorer.com"
+    "name": "Kii Testnet Oro",
+    "rpcUrl": "https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com/",
+    "chainId": "1336",
+    "symbol": "KII",
+    "explorer": "https://explorer.kiichain.io/testnet/"
   },
   {
     "name": "Rome Test Network",
