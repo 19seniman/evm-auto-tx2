@@ -77,11 +77,11 @@
     "explorer": "https://testnet.brid.gg/sepolia"
   },
   {
-    "name": "Humanity Protocol Testnet",
-    "rpcUrl": "https://rpc.testnet.humanity.org",
-    "chainId": "1942999413",
-    "symbol": "tHP",
-    "explorer": "https://explorer.testnet.humanity.org"
+    "name": "Umi Network Testnet",
+    "rpcUrl": "https://ethereum.uminetwork.com",
+    "chainId": "1337",
+    "symbol": "ETH",
+    "explorer": "https://explorer.uminetwork.com"
   },
   {
     "name": "Helios Testnet",
@@ -119,11 +119,11 @@
     "explorer": "https://explorer.testnet.citrea.xyz"
   },
   {
-    "name": "Open Campus",
-    "rpcUrl": "https://rpc.open-campus-codex.gelato.digital",
-    "chainId": "656476",
-    "symbol": "EDU",
-    "explorer": "https://opencampus-codex.blockscout.com"
+    "name": "Giwa Testnet",
+    "rpcUrl": "https://sepolia-rpc.giwa.io",
+    "chainId": "91342",
+    "symbol": "ETH",
+    "explorer": "https://sepolia-explorer.giwa.io"
   },
   {
     "name": "Movement MEVM",
@@ -182,10 +182,10 @@
     "explorer": "https://testnet.storyscan.xyz"
   },
   {
-    "name": "SaharaAI Testnet",
-    "rpcUrl": "https://testnet.saharalabs.ai",
-    "chainId": "313313",
-    "symbol": "SAHARA",
-    "explorer": "https://testnet-explorer.saharalabs.ai"
+    "name": "Hoodi",
+    "rpcUrl": "https://rpc.hoodi.ethpandaops.io",
+    "chainId": "560048",
+    "symbol": "ETH",
+    "explorer": "https://hoodi.etherscan.io"
   }
 ]
