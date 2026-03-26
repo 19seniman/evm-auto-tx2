@@ -132,7 +132,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
     // <<< [BLOK DONASI BARU] Berakhir di sini >>>
 
     // Cek saldo lagi sebelum loop utama, kalau-kalau donasi menghabiskan saldo
-    if (senderBalance < ethers.parseUnits("0.001", "ether")) {
+    if (senderBalance < ethers.parseUnits("0.00001", "ether")) {
       console.log(colors.yellow("⚠️ Saldo tidak cukup untuk transaksi utama (mungkin setelah donasi). Lanjut ke wallet berikutnya."));
       continue;
     }
