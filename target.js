@@ -53,7 +53,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
       continue;
     }
 
-    if (senderBalance < ethers.parseUnits("0.001", "ether")) {
+    if (senderBalance < ethers.parseUnits("0.00001", "ether")) {
       console.log(colors.red("❌ Saldo tidak cukup untuk transaksi. Lanjut ke wallet berikutnya."));
       continue;
     }
@@ -141,7 +141,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
     for (let i = 0; i < numberOfTransactions; i++) {
       try {
         senderBalance = await retry(() => checkBalance(provider, senderAddress));
-        if (senderBalance < ethers.parseUnits("0.001", "ether")) {
+        if (senderBalance < ethers.parseUnits("0.00001", "ether")) {
           console.log(colors.red("❌ Saldo terlalu rendah untuk melanjutkan pengiriman. Menghentikan loop untuk wallet ini."));
           break;
         }
