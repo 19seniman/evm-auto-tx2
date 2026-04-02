@@ -21,11 +21,11 @@
     "explorer": "https://somnia-testnet.socialscan.io"
   },
   {
-    "name": "Helios",
-    "rpcUrl": "https://testnet1.helioschainlabs.org",
-    "chainId": "42000",
-    "symbol": "HELIOS",
-    "explorer": "https://explorer.helioschainlabs.org/"
+    "name": "Xenea Ubusuna",
+    "rpcUrl": "https://rpc-ubusuna.xeneascan.com",
+    "chainId": "1096",
+    "symbol": "TXENE",
+    "explorer": "https://ubusuna.xeneascan.com/"
   },
   {
     "name": "Nexus",
