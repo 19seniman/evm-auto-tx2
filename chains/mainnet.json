@@ -1,10 +1,10 @@
 [
   {
-    "name": "Ethereum Mainnet",
-    "rpcUrl": "https://mainnet.infura.io/v3",
-    "chainId": "1",
-    "symbol": "ETH",
-    "explorer": "https://etherscan.io"
+    "name": "Monad Mainnet",
+    "rpcUrl": "https://rpc.monad.xyz",
+    "chainId": "143",
+    "symbol": "MON",
+    "explorer": "https://monadscan.com"
   },
   {
     "name": "Cross Mainnet",
