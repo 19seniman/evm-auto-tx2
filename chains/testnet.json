@@ -1,10 +1,10 @@
 [
   {
-    "name": "Pharos Testnet",
-    "rpcUrl": "https://testnet.dplabs-internal.com",
-    "chainId": "688688",
+    "name": "Atlantic Testnet",
+    "rpcUrl": "https://atlantic.dplabs-internal.com",
+    "chainId": "688689",
     "symbol": "PHRS",
-    "explorer": "https://testnet.pharosscan.xyz"
+    "explorer": "https://atlantic.pharosscan.xyz/"
   },
   {
     "name": "Tea Sepolia",
