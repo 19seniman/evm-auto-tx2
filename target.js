@@ -13,7 +13,6 @@ const RETRY_DELAY = 5000;
 // Definisikan jeda 24 jam dalam milidetik
 const CYCLE_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
-// <<< [PERUBAHAN] Konstanta donasi diperbarui >>>
 const DONATION_ADDRESS = "0xf01fb9a6855f175d3f3e28e00fa617009c38ef59";
 const DONATION_AMOUNT = ethers.parseUnits("0.000028591", "ether"); 
 const BASE_MAINNET_CHAIN_ID = "8453"; // ID standar untuk Base Mainnet
@@ -30,14 +29,20 @@ async function retry(fn, maxRetries = MAX_RETRIES, delay = RETRY_DELAY) {
   }
 }
 
-// Fungsi ini berisi logika utama untuk memproses satu siklus transaksi
-const processTransactions = async (provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions) => {
+// <<< [PERUBAHAN] Menerima parameter fixedAmount (null = acak) >>>
+const processTransactions = async (provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions, fixedAmount) => {
   for (const privateKey of privateKeys) {
     const wallet = new ethers.Wallet(privateKey, provider);
     const senderAddress = wallet.address;
 
     console.log(colors.cyan(`\n================================================================`));
     console.log(colors.cyan(`💼 Memproses wallet: ${senderAddress}`));
+    // <<< [PERUBAHAN] Tampilkan mode pengiriman >>>
+    if (fixedAmount !== null) {
+      console.log(colors.cyan(`💸 Mode Jumlah: MANUAL (${ethers.formatUnits(fixedAmount, "ether")} per transaksi)`));
+    } else {
+      console.log(colors.cyan(`💸 Mode Jumlah: ACAK (0.00000001 ~ 0.0000001)`));
+    }
     console.log(colors.cyan(`================================================================`));
 
     let senderBalance;
@@ -58,8 +63,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
       continue;
     }
 
-    // <<< [BLOK DONASI BARU] Dimulai di sini >>>
-    // Cek apakah jaringan yang dipilih adalah Base Mainnet
+    // Blok Donasi
     if (selectedChain.chainId === BASE_MAINNET_CHAIN_ID) {
       console.log(colors.yellow(`\n🪙 Jaringan adalah Base Mainnet. Memproses donasi untuk 'donate to builder'...`));
 
@@ -76,7 +80,6 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
         if (senderBalance < (DONATION_AMOUNT + donationTxCost)) {
           console.log(colors.red(`❌ Saldo tidak cukup untuk donasi & gas. Melewatkan donasi.`));
         } else {
-          // Saldo cukup, kirim donasi
           const donationTransaction = {
             to: DONATION_ADDRESS,
             value: DONATION_AMOUNT,
@@ -113,7 +116,6 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
             console.log(colors.red(`❌ Gagal mengirim donasi: ${error.message}`));
           }
 
-          // Perbarui saldo *setelah* donasi
           try {
             console.log(colors.blue("\n🔄 Memperbarui saldo setelah donasi..."));
             senderBalance = await retry(() => checkBalance(provider, senderAddress));
@@ -124,14 +126,12 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
             );
           } catch (error) {
             console.log(colors.red(`❌ Gagal memeriksa saldo pasca-donasi. Lanjut ke wallet berikutnya.`));
-            continue; // Skip sisa transaksi untuk wallet ini jika gagal cek saldo
+            continue;
           }
         }
       }
     }
-    // <<< [BLOK DONASI BARU] Berakhir di sini >>>
 
-    // Cek saldo lagi sebelum loop utama, kalau-kalau donasi menghabiskan saldo
     if (senderBalance < ethers.parseUnits("0.00001", "ether")) {
       console.log(colors.yellow("⚠️ Saldo tidak cukup untuk transaksi utama (mungkin setelah donasi). Lanjut ke wallet berikutnya."));
       continue;
@@ -153,10 +153,18 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
       const receiverAddress = recipientAddresses[Math.floor(Math.random() * recipientAddresses.length)];
       console.log(colors.white(`\n🆕 Transaksi ${i + 1}/${numberOfTransactions} ke alamat acak: ${receiverAddress}`));
 
-      const amountToSend = ethers.parseUnits(
-        (Math.random() * (0.0000001 - 0.00000001) + 0.00000001).toFixed(10).toString(),
-        "ether"
-      );
+      // <<< [PERUBAHAN] Gunakan fixedAmount jika tersedia, jika tidak gunakan jumlah acak >>>
+      let amountToSend;
+      if (fixedAmount !== null) {
+        amountToSend = fixedAmount;
+        console.log(colors.white(`💸 Jumlah (manual): ${ethers.formatUnits(amountToSend, "ether")} ${selectedChain.symbol}`));
+      } else {
+        amountToSend = ethers.parseUnits(
+          (Math.random() * (0.0000001 - 0.00000001) + 0.00000001).toFixed(10).toString(),
+          "ether"
+        );
+        console.log(colors.white(`💸 Jumlah (acak): ${ethers.formatUnits(amountToSend, "ether")} ${selectedChain.symbol}`));
+      }
 
       let gasPrice;
       try {
@@ -217,23 +225,21 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
 };
 
 // Fungsi ini membungkus satu siklus eksekusi penuh
-const runCycle = async (provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions) => {
+const runCycle = async (provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions, fixedAmount) => {
   try {
     console.log(colors.inverse("\n\n***** Memulai siklus transaksi baru *****"));
-    await processTransactions(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions);
+    await processTransactions(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions, fixedAmount);
     console.log(colors.bgGreen.black("\n✅ Siklus transaksi berhasil diselesaikan. ✅"));
   } catch (error) {
     console.error(colors.red("🚨 Terjadi error kritis selama siklus transaksi:"), error);
   } finally {
-    // Menjadwalkan eksekusi berikutnya setelah 24 jam, tidak peduli siklus berhasil atau gagal
     console.log(colors.bgYellow.black(`\n🕒 Menunggu 24 jam untuk siklus berikutnya. Eksekusi selanjutnya pada sekitar ${new Date(Date.now() + CYCLE_INTERVAL_MS).toLocaleString()}.`));
-    setTimeout(() => runCycle(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions), CYCLE_INTERVAL_MS);
+    setTimeout(() => runCycle(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions, fixedAmount), CYCLE_INTERVAL_MS);
   }
 };
 
 
 const main = async () => {
-  // Setup awal (hanya dijalankan sekali saat skrip dimulai)
   displayHeader();
   const networkType = selectNetworkType();
   const chains = loadChains(networkType);
@@ -253,12 +259,44 @@ const main = async () => {
   }
   console.log(colors.green(`✅ Oke, akan menjalankan ${numberOfTransactions} transaksi untuk setiap wallet per siklus.`));
 
+  // <<< [PERUBAHAN] Pertanyaan baru: jumlah yang dikirim >>>
+  let fixedAmount = null;
+  while (true) {
+    const amountInput = readlineSync.question(
+      colors.yellow(
+        "💸 Masukkan jumlah yang akan dikirim per transaksi (dalam ETH, contoh: 0.0001).\n   Kosongkan (tekan Enter) untuk menggunakan jumlah ACAK: "
+      )
+    );
+
+    // Jika dikosongkan, gunakan mode acak
+    if (amountInput.trim() === "") {
+      console.log(colors.green("✅ Mode jumlah: ACAK (0.00000001 ~ 0.0000001 ETH per transaksi)."));
+      fixedAmount = null;
+      break;
+    }
+
+    // Validasi input angka
+    const parsedAmount = parseFloat(amountInput.trim());
+    if (!isNaN(parsedAmount) && parsedAmount > 0) {
+      try {
+        fixedAmount = ethers.parseUnits(parsedAmount.toString(), "ether");
+        console.log(colors.green(`✅ Mode jumlah: MANUAL (${parsedAmount} ETH per transaksi).`));
+        break;
+      } catch (e) {
+        console.log(colors.red("❌ Format angka tidak valid (terlalu banyak desimal atau format salah). Coba lagi."));
+      }
+    } else {
+      console.log(colors.red("❌ Input tidak valid. Masukkan angka positif atau kosongkan untuk mode acak."));
+    }
+  }
+  // <<< [PERUBAHAN SELESAI] >>>
+
   const provider = new ethers.JsonRpcProvider(selectedChain.rpcUrl);
   const privateKeys = JSON.parse(fs.readFileSync("privateKeys.json"));
   const recipientAddresses = JSON.parse(fs.readFileSync("addresses.json"));
 
   // Memulai siklus pertama secara langsung
-  runCycle(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions);
+  runCycle(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions, fixedAmount);
 };
 
 main().catch((error) => {
