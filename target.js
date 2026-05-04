@@ -29,7 +29,7 @@ async function retry(fn, maxRetries = MAX_RETRIES, delay = RETRY_DELAY) {
   }
 }
 
-// <<< [PERUBAHAN] Menerima parameter fixedAmount (null = acak) >>>
+// Menerima parameter fixedAmount (null = acak)
 const processTransactions = async (provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions, fixedAmount) => {
   for (const privateKey of privateKeys) {
     const wallet = new ethers.Wallet(privateKey, provider);
@@ -37,7 +37,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
 
     console.log(colors.cyan(`\n================================================================`));
     console.log(colors.cyan(`💼 Memproses wallet: ${senderAddress}`));
-    // <<< [PERUBAHAN] Tampilkan mode pengiriman >>>
+    // Tampilkan mode pengiriman
     if (fixedAmount !== null) {
       console.log(colors.cyan(`💸 Mode Jumlah: MANUAL (${ethers.formatUnits(fixedAmount, "ether")} per transaksi)`));
     } else {
@@ -153,7 +153,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
       const receiverAddress = recipientAddresses[Math.floor(Math.random() * recipientAddresses.length)];
       console.log(colors.white(`\n🆕 Transaksi ${i + 1}/${numberOfTransactions} ke alamat acak: ${receiverAddress}`));
 
-      // <<< [PERUBAHAN] Gunakan fixedAmount jika tersedia, jika tidak gunakan jumlah acak >>>
+      // Gunakan fixedAmount jika tersedia, jika tidak gunakan jumlah acak
       let amountToSend;
       if (fixedAmount !== null) {
         amountToSend = fixedAmount;
@@ -238,7 +238,6 @@ const runCycle = async (provider, selectedChain, privateKeys, recipientAddresses
   }
 };
 
-
 const main = async () => {
   displayHeader();
   const networkType = selectNetworkType();
@@ -259,35 +258,48 @@ const main = async () => {
   }
   console.log(colors.green(`✅ Oke, akan menjalankan ${numberOfTransactions} transaksi untuk setiap wallet per siklus.`));
 
-  // <<< [PERUBAHAN] Pertanyaan baru: jumlah yang dikirim >>>
+  // <<< [PERUBAHAN MENU] Pilihan metode jumlah yang dikirim >>>
   let fixedAmount = null;
+  let menuChoice;
+
   while (true) {
-    const amountInput = readlineSync.question(
-      colors.yellow(
-        "💸 Masukkan jumlah yang akan dikirim per transaksi (dalam ETH, contoh: 0.0001).\n   Kosongkan (tekan Enter) untuk menggunakan jumlah ACAK: "
-      )
-    );
-
-    // Jika dikosongkan, gunakan mode acak
-    if (amountInput.trim() === "") {
-      console.log(colors.green("✅ Mode jumlah: ACAK (0.00000001 ~ 0.0000001 ETH per transaksi)."));
-      fixedAmount = null;
+    console.log(colors.cyan("\n======================================"));
+    console.log(colors.cyan("Pilih metode jumlah pengiriman:"));
+    console.log(colors.yellow("1. Input jumlah kirim manual"));
+    console.log(colors.yellow("2. Kirim random tanpa input jumlah"));
+    console.log(colors.cyan("======================================"));
+    
+    menuChoice = readlineSync.question(colors.yellow("Pilih menu (1/2): "));
+    
+    if (menuChoice === "1" || menuChoice === "2") {
       break;
-    }
-
-    // Validasi input angka
-    const parsedAmount = parseFloat(amountInput.trim());
-    if (!isNaN(parsedAmount) && parsedAmount > 0) {
-      try {
-        fixedAmount = ethers.parseUnits(parsedAmount.toString(), "ether");
-        console.log(colors.green(`✅ Mode jumlah: MANUAL (${parsedAmount} ETH per transaksi).`));
-        break;
-      } catch (e) {
-        console.log(colors.red("❌ Format angka tidak valid (terlalu banyak desimal atau format salah). Coba lagi."));
-      }
     } else {
-      console.log(colors.red("❌ Input tidak valid. Masukkan angka positif atau kosongkan untuk mode acak."));
+      console.log(colors.red("❌ Input tidak valid. Harap ketik angka 1 atau 2."));
     }
+  }
+
+  if (menuChoice === "1") {
+    while (true) {
+      const amountInput = readlineSync.question(
+        colors.yellow("\n💸 Masukkan jumlah yang akan dikirim per transaksi (dalam ETH, contoh: 0.0001): ")
+      );
+
+      const parsedAmount = parseFloat(amountInput.trim());
+      if (!isNaN(parsedAmount) && parsedAmount > 0) {
+        try {
+          fixedAmount = ethers.parseUnits(parsedAmount.toString(), "ether");
+          console.log(colors.green(`✅ Mode jumlah: MANUAL (${parsedAmount} ETH per transaksi).`));
+          break;
+        } catch (e) {
+          console.log(colors.red("❌ Format angka tidak valid (terlalu banyak desimal atau format salah). Coba lagi."));
+        }
+      } else {
+        console.log(colors.red("❌ Input tidak valid. Masukkan angka desimal positif (contoh: 0.0001)."));
+      }
+    }
+  } else {
+    console.log(colors.green("✅ Mode jumlah: ACAK (0.00000001 ~ 0.0000001 ETH per transaksi)."));
+    fixedAmount = null;
   }
   // <<< [PERUBAHAN SELESAI] >>>
 
@@ -303,3 +315,4 @@ main().catch((error) => {
   console.error(colors.red("🚨 Terjadi error tak terduga yang menghentikan skrip:"), error);
   process.exit(1);
 });
+
