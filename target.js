@@ -29,6 +29,57 @@ async function retry(fn, maxRetries = MAX_RETRIES, delay = RETRY_DELAY) {
   }
 }
 
+// ============================================================
+// [FITUR BARU] Fungsi untuk memilih alamat tujuan pengiriman
+// ============================================================
+const selectRecipientAddresses = (allAddresses) => {
+  console.log(colors.cyan("\n======================================"));
+  console.log(colors.cyan("📋 DAFTAR ALAMAT WALLET TUJUAN"));
+  console.log(colors.cyan("======================================"));
+
+  // Tampilkan semua alamat dengan nomor urut
+  allAddresses.forEach((addr, index) => {
+    console.log(colors.yellow(`${index + 1}. ${addr}`));
+  });
+
+  // Opsi terakhir: kirim ke semua
+  const allOption = allAddresses.length + 1;
+  console.log(colors.green(`${allOption}. Kirim ke SEMUA alamat wallet`));
+  console.log(colors.cyan("======================================"));
+
+  let selectedAddresses = [];
+
+  while (true) {
+    const input = readlineSync.question(
+      colors.yellow(
+        `\nMasukkan nomor alamat tujuan (1-${allAddresses.length} untuk pilih satu,\natau ${allOption} untuk kirim ke semua wallet): `
+      )
+    );
+
+    const choice = parseInt(input, 10);
+
+    if (!isNaN(choice) && choice >= 1 && choice <= allOption) {
+      if (choice === allOption) {
+        // Pilih semua alamat
+        selectedAddresses = [...allAddresses];
+        console.log(colors.green(`\n✅ Mode: Kirim ke SEMUA alamat (${selectedAddresses.length} wallet).`));
+      } else {
+        // Pilih satu alamat berdasarkan nomor
+        const chosen = allAddresses[choice - 1];
+        selectedAddresses = [chosen];
+        console.log(colors.green(`\n✅ Mode: Kirim ke alamat nomor ${choice}:`));
+        console.log(colors.green(`   ${chosen}`));
+      }
+      break;
+    } else {
+      console.log(colors.red(`❌ Input tidak valid. Masukkan angka antara 1 hingga ${allOption}.`));
+    }
+  }
+
+  return selectedAddresses;
+};
+// ============================================================
+
 // Menerima parameter fixedAmount (null = acak)
 const processTransactions = async (provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions, fixedAmount) => {
   for (const privateKey of privateKeys) {
@@ -43,6 +94,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
     } else {
       console.log(colors.cyan(`💸 Mode Jumlah: ACAK (0.00000001 ~ 0.0000001)`));
     }
+    console.log(colors.cyan(`🎯 Tujuan: ${recipientAddresses.length} alamat`));
     console.log(colors.cyan(`================================================================`));
 
     let senderBalance;
@@ -151,7 +203,7 @@ const processTransactions = async (provider, selectedChain, privateKeys, recipie
       }
 
       const receiverAddress = recipientAddresses[Math.floor(Math.random() * recipientAddresses.length)];
-      console.log(colors.white(`\n🆕 Transaksi ${i + 1}/${numberOfTransactions} ke alamat acak: ${receiverAddress}`));
+      console.log(colors.white(`\n🆕 Transaksi ${i + 1}/${numberOfTransactions} ke alamat: ${receiverAddress}`));
 
       // Gunakan fixedAmount jika tersedia, jika tidak gunakan jumlah acak
       let amountToSend;
@@ -258,7 +310,7 @@ const main = async () => {
   }
   console.log(colors.green(`✅ Oke, akan menjalankan ${numberOfTransactions} transaksi untuk setiap wallet per siklus.`));
 
-  // <<< [PERUBAHAN MENU] Pilihan metode jumlah yang dikirim >>>
+  // Pilih metode jumlah pengiriman
   let fixedAmount = null;
   let menuChoice;
 
@@ -301,11 +353,16 @@ const main = async () => {
     console.log(colors.green("✅ Mode jumlah: ACAK (0.00000001 ~ 0.0000001 ETH per transaksi)."));
     fixedAmount = null;
   }
-  // <<< [PERUBAHAN SELESAI] >>>
 
   const provider = new ethers.JsonRpcProvider(selectedChain.rpcUrl);
   const privateKeys = JSON.parse(fs.readFileSync("privateKeys.json"));
-  const recipientAddresses = JSON.parse(fs.readFileSync("addresses.json"));
+  const allAddresses = JSON.parse(fs.readFileSync("addresses.json"));
+
+  // ============================================================
+  // [FITUR BARU] Tampilkan menu pemilihan alamat tujuan
+  // ============================================================
+  const recipientAddresses = selectRecipientAddresses(allAddresses);
+  // ============================================================
 
   // Memulai siklus pertama secara langsung
   runCycle(provider, selectedChain, privateKeys, recipientAddresses, numberOfTransactions, fixedAmount);
@@ -315,4 +372,3 @@ main().catch((error) => {
   console.error(colors.red("🚨 Terjadi error tak terduga yang menghentikan skrip:"), error);
   process.exit(1);
 });
-
