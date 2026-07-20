@@ -7,11 +7,11 @@
     "explorer": "https://monadscan.com"
   },
   {
-    "name": "Cross Mainnet",
-    "rpcUrl": "https://bsc-dataseed.binance.org/",
-    "chainId": "56",
-    "symbol": "CROSS",
-    "explorer": "https://bscscan.com/"
+    "name": "Robinhood Mainnet",
+    "rpcUrl": "https://rpc.mainnet.chain.robinhood.com",
+    "chainId": "4663",
+    "symbol": "ETH",
+    "explorer": "https://robinhoodchain.blockscout.com"
   },
   {
     "name": "Base Mainnet",
