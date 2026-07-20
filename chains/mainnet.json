@@ -8,7 +8,7 @@
   },
   {
     "name": "Robinhood Mainnet",
-    "rpcUrl": "https://rpc.mainnet.chain.robinhood.com",
+    "rpcUrl": "https://robinhood.drpc.org",
     "chainId": "4663",
     "symbol": "ETH",
     "explorer": "https://robinhoodchain.blockscout.com"
